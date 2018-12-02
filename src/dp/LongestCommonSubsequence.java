@@ -2,7 +2,7 @@ package dp;
 
 import java.util.Scanner;
 
-public class LCSS2 {
+public class LongestCommonSubsequence {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		while(sc.hasNext()) {
