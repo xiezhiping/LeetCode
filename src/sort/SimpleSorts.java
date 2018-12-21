@@ -24,7 +24,8 @@ public class SimpleSorts {
 		}
 //		selectSort(a, length); // 使用直观的选择排序
 //		insertSort(a, length); // 使用插入排序
-		binarySort(a, length); // 使用二分排序
+//		binarySort(a, length); // 使用二分排序
+		quickSort(a, 0, length-1);
 		System.out.println("\nafter sort:");
 		for (int i= 0; i < length; i++) {
 			System.out.print(a[i] + " ");
@@ -79,6 +80,39 @@ public class SimpleSorts {
 				source[j + 1] = source[j];
 			}
 			source[high + 1] = temp;
+		}
+	}
+	/**
+	 * 快排：选取一个标记值，将所有比这大的放标记值右边，所有小的放左边，然后递归快排
+	 * @param source 待排序数组
+	 * @param low 下确界
+	 * @param high 上确界
+	 */
+	public static void quickSort(int[] source, int low, int high) {
+		int i, j, x;
+		if (low < high) {
+			i = low;
+			j = high;
+			x = source[i];
+			while (i < j) {
+				while (i < j && source[j] > x) {
+					j--;
+				}
+				if (i < j) {
+					source[i] = source[j];
+					i++;
+				}
+				while (i < j && source[i] < x) {
+					i++;
+				}
+				if (i < j) {
+					source[j] = source[i];
+					j--;
+				}
+			}
+			source[i] = x;
+			quickSort(source, 0, i-1);
+			quickSort(source, i+1, high);
 		}
 	}
 	public static void swap(int[] source, int start, int end) {
