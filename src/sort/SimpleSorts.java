@@ -9,7 +9,8 @@ package sort;
  * (3) 赋值操作介于0~(n-1)*3；
  * (4) 平均复杂度为O(n^2).
  * 2. 插入排序
- * 3. 二分法 排序 
+ * 3. 二分法 排序
+ * 4. 快速排序 
  * @author xzp
  *
  */
@@ -25,7 +26,7 @@ public class SimpleSorts {
 //		selectSort(a, length); // 使用直观的选择排序
 //		insertSort(a, length); // 使用插入排序
 //		binarySort(a, length); // 使用二分排序
-		quickSort(a, 0, length-1);
+		quicksort(a, 0, length-1);
 		System.out.println("\nafter sort:");
 		for (int i= 0; i < length; i++) {
 			System.out.print(a[i] + " ");
@@ -114,6 +115,40 @@ public class SimpleSorts {
 			quickSort(source, 0, i-1);
 			quickSort(source, i+1, high);
 		}
+	}
+	/**
+	 * 更加清晰的一种快排实现方式，本质就是跳跃式的不断将基数归位
+	 * @param array
+	 * @param left
+	 * @param right
+	 */
+	public static void quicksort(int[] array, int left, int right) {
+		if (left > right) {
+			return;
+		}
+		int i, j, temp; // i, j 分别为左右哨兵
+		temp = array[left]; // temp存的就是基准数
+		i = left;
+		j = right;
+		while (i < j) {
+			// 顺序很重要，要先从右往左找
+			while (array[j] >= temp && i < j) {
+				j--;
+			}
+			// 再从左往右找
+			while (array[i] <= temp && i < j) {
+				i++;
+			}
+			// 交换两个数在数组中的位置
+			if (i < j) { // 当哨兵i, j 没有相遇的时
+				swap(array, i, j);
+			}
+		}
+		// 最终将基准数归为，如此往复
+		array[left] = array[i]; // 注意边界值
+		array[i] = temp;
+		quicksort(array, left, i-1); // 递归处理左边的
+		quickSort(array, i + 1, right); // 递归处理右边的
 	}
 	public static void swap(int[] source, int start, int end) {
 		int temp = source[start];
