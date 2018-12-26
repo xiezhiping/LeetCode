@@ -56,7 +56,7 @@ public class NumberPermutation {
 			number /= 10;
 		}
 		for (int j = 1; j <= n; j++ ) {
-			
+			// TODO
 		}
 		return result;
 	}
