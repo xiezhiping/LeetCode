@@ -2,12 +2,13 @@ package dfs;
 
 import java.util.Scanner;
 /**
- * 假如有标有数字1~n的n张扑克，要一对一的放到n个box里面去，问有哪些方法。
+ * 给定1~9的9个数，拿去填9个盒子使其：ABC + DEF = GHI
+ * 其实是上一种的变体，只是多个判断而已，我只是想看一下数据，所以单独改写一下，后面的注释就懒得改了！！！！
  * 全排列问题！！！
  * @author XZP
  *
  */
-public class PlayCards {
+public class AddEquation {
 	public static int[] book;
 	public static int[] box;
 	public static int count = 0; // 针对不同的数字放置方式的总数
@@ -32,11 +33,13 @@ public class PlayCards {
 	}
 	public static void dfs (int step) {
 		if (step == cards + 1) { // 如果站在第n + 1个box面前，则表示一趟放置结束，输出结果并返回调用栈
-			System.out.println("\n这次的放置结果是：");
-			for (int i = 1; i < box.length; i++) {
-				System.out.print(box[i]);
+			// 改动的地方在这里
+			if ((box[1] + box[4])*100 + (box[2] + box[5]) * 10 + box[3] + box[6] == box[7] * 100 + box[8] * 10 + box[9]) {
+				System.out.println("\n使等式：ABC + DEF = GHI成立的三个数分别是：");
+					System.out.print(box[1]+ "" +box[2] + "" +box[3] + "+" + box[4] + "" + box[5] + "" + box[6] + "=" + box[7] + "" + box[8] + "" + box[9]);
+				count++;
+				
 			}
-			count++;
 			return;
 		}
 		// 此时站在第step个盒子面前，应该放置那张牌呢？按照1,2,3的顺序一一尝试
