@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import jdk.internal.dynalink.beans.StaticClass;
 
 public class MatchEquation {
 	public static Map<Integer, Integer> match = new HashMap<>(); // 首先初始化一个存储每个数字对应使用多少火柴棍的map
