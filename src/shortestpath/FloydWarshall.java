@@ -1,4 +1,4 @@
-package others;
+package shortestpath;
 /**
  * 只有五行的最短路径求解算法 ——FloydWarshall
  * @author XZP
