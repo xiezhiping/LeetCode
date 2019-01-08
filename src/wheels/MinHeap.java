@@ -121,7 +121,7 @@ public class MinHeap {
 	 * @return
 	 */
 	private int right(int i) {
-		return i << 1 + 1; // 右孩子为右移一位 + 1
+		return (i << 1) + 1; // 右孩子为右移一位 + 1
 	}
 	/**
 	 * 获取值较小的下标值
