@@ -1,6 +1,7 @@
 package cut.point;
 
 import java.util.Scanner;
+import java.util.Stack;
 
 /**
  * "轰炸重要城市"问题：
@@ -21,10 +22,135 @@ import java.util.Scanner;
 public class BombingImportantCity {
 
 	public static void main(String[] args) {
+		int INF = 99999; // 人为设定的最大值
 		Scanner sc = new Scanner(System.in);
+		int i; // 游标
+		int v1, v2; //暂时存储边两个顶点的编号
 		int n = sc.nextInt(); // 顶点数
 		int m = sc.nextInt(); // 边的条数
+//		Edge[] edges = new Edge[m + 1]; // 存储边的数组，下标从1开始
+		int[][] edges = new int[n + 1][n +1]; // 存放边的邻接矩阵
+		int[] num = new int[n + 1]; // 存储第一遍从顶点1dfs遍历情况下的时间戳，数组下标代表顶点编号，值表示第几个访问到（时间戳）
+		int[] low = new int [n + 1]; // 表示每个顶点在不经过父顶点能回到的最小时间戳（比较拗口，大致可以理解为：根据num数组找到父节点，然后用dfs遍历，能够达到的最小时间戳）
+		// 初始化low数组，比较重要
+		for (i = 1; i <= n; i++) {
+			low[i] = INF;
+		}
 		
+		// 读入m条边
+		for (i =1; i <= m; i++) {
+			v1 = sc.nextInt();
+			v2 = sc.nextInt();
+			edges[v1][v2] = 1; // 其他都为零表示两点之间不可达或者是自身
+		}
+		// 求num数组（每个顶点对应的时间戳）
+		dfs(1, edges, num, n);
+		
+		// 得到割点
+		int cutPoint = judgeCutPoint(low, edges, n, num);
+		if (cutPoint == 0) {
+			System.out.println("没有割点！");
+		} else {
+			System.out.println("割点编号为： " + cutPoint);
+		}
 	}
+	public static void dfsExParent(int[] low, int child,int parent, int[][] edges, int[] num, int n) {
+		int[] book = new int[n + 1]; // 用于判断一个顶点是否已经被放到栈里面去过了，避免环引起的错误
+		Stack<Integer> search = new Stack<Integer>();
+		search.push(child);
+		book[child] = 1;
+		while (!search.isEmpty()) {
+			// 首先从栈顶去一个元素，并将这个顶点相连的顶点入栈
+			int top = search.pop();
+			// 用更小的时间戳替换掉
+			if (num[top] < low[child]) {
+				low[child] = num[top];
+			}
+			for (int i = 1; i <=n; i++) {
+				if (i !=parent && edges[top][i] == 1 && book[i] == 0) {
+					search.push(i);
+					book[i] = 1;
+				}
+			}
+		}
+	}
+	public static int judgeCutPoint(int[] low, int[][] edges, int n, int[] num) {
+		for (int i = 1; i <= n; i++) { // 依次计算节点i的low[i]值
+			int parent = findParent(i, num, n);
+			// 排除掉父节点的情况下，使用dfs遍历，将遍历到的时间戳值用更小的替换大的时间戳值，不断更新low[i]的值
+			dfsExParent(low, i, parent, edges, num, parent);
+			if (low[i] >= num[parent]) {
+				return i;
+			}
+		}
+		return 0;
+	}
+	/**
+	 * 根据时间戳数组找一个节点的父节点
+	 * @param i 当前节点编号
+	 * @param num 时间戳数组
+	 * @param n 顶点个数
+	 * @return 正确情况下返回父节点的编号，如果返回为0表示出错了！
+	 */
+	public static int findParent(int i, int[] num, int n) {
+		if (num[i] == i) {
+			return i;
+		} else {
+			int parent = num[i] - 1; // 父节点的时间戳为当前的时间戳减一
+			for (int j = 1; j <= n; j++) {
+				if (num[j] == parent) {
+					return j;
+				}
+			}
+			return 0; // 是一种出错的返回
+		}
+	}
+	/**
+	 * 计算num数组的dfs方法
+	 * @param start 起始点
+	 * @param edges 边数组
+	 * @param num num数组
+	 * @param n 顶点个数
+	 */
+	public static void dfs(int start, int[][] edges, int[] num, int n) {
+		int[] book = new int[n + 1]; // 用于判断一个顶点是否已经被放到栈里面去过了，避免环引起的错误
+		int number = 1; // 被访问到的编号
+		Stack<Integer> search = new Stack<Integer>();
+		search.push(start);
+		book[start] = 1;
+		while (!search.isEmpty()) {
+			// 首先从栈顶去一个元素，并将这个顶点相连的顶点入栈
+			int top = search.pop();
+			num[top] = number; // 为num数组赋值
+			number++;
+			for (int i = 1; i <=n; i++) {
+				if (edges[top][i] == 1 && book[i] == 0) {
+					search.push(i);
+					book[i] = 1;
+				}
+			}
+		}
+	}
+}
 
+//***********实践证明：这种存储方式在某些情况下比较优化，但是由于dfs便于找到下一个顶点，最好还是用邻接矩阵*******************
+/**
+ * 表示一条边的对象
+ * @author XZP
+ *
+ */
+class Edge {
+	private int v1;
+	private int v2;
+	public Edge(int v1, int v2) {
+		this.v1 = v1;
+		this.v2 = v2;
+	}
+	// getter
+	public int getV1() {
+		return v1;
+	}
+	public int getV2() {
+		return v2;
+	}
 }
