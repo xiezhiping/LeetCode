@@ -8,6 +8,7 @@ import java.util.Stack;
  * 假设当前我们拥有一个 地区的城市地图，但是只有一个原子弹，为了让这颗原子弹发挥最大的效果，要阻断这个地区各个城市中最关键的一个交通要塞，那么这个原子弹该投放在哪里？
  * 其实真有原子弹就不会考虑这么多了（~……~），扯回正题。这种问题模型化之后，就是让我们从一个无向连通图中选择一个“割点”，去掉这个点之后，不再是连通图。
  * 关键词：DFS、割点、无向连通图、重要城市
+ * 特殊说明：有些方法的参数比较多，主要是这次不想用一些全局静态变量来处理，所以就全部通过传参解决！
  * @author XZP
  *一组测试数据：
 6 7 
@@ -47,13 +48,22 @@ public class BombingImportantCity {
 		dfs(1, edges, num, n);
 		
 		// 得到割点
-		int cutPoint = judgeCutPoint(low, edges, n, num);
+		int cutPoint = judgeCutPoint(low, edges, n, num, 1);
 		if (cutPoint == 0) {
 			System.out.println("没有割点！");
 		} else {
 			System.out.println("割点编号为： " + cutPoint);
 		}
 	}
+	/**
+	 * 以当前节点为起始点排除父节点的情况下深度优先遍历以获取当前点能访问的最小时间戳
+	 * @param low 待计算、更新的最小访问时间戳
+	 * @param child 当前节点
+	 * @param parent 当前节点的父节点（根据num矩阵来的）
+	 * @param edges 边的邻接矩阵
+	 * @param num 时间戳矩阵
+	 * @param n 顶点个数
+	 */
 	public static void dfsExParent(int[] low, int child,int parent, int[][] edges, int[] num, int n) {
 		int[] book = new int[n + 1]; // 用于判断一个顶点是否已经被放到栈里面去过了，避免环引起的错误
 		Stack<Integer> search = new Stack<Integer>();
@@ -67,19 +77,28 @@ public class BombingImportantCity {
 				low[child] = num[top];
 			}
 			for (int i = 1; i <=n; i++) {
-				if (i !=parent && edges[top][i] == 1 && book[i] == 0) {
+				if (i !=parent && num[top] < i && edges[top][i] == 1 && book[i] == 0) {
 					search.push(i);
 					book[i] = 1;
 				}
 			}
 		}
 	}
-	public static int judgeCutPoint(int[] low, int[][] edges, int n, int[] num) {
+	/**
+	 * 判断一个点是否是割点的方法
+	 * @param low low数组，存储当前节点在不经过父节点的情况下能够访问节点的最小时间戳
+	 * @param edges 边的邻接矩阵
+	 * @param n 顶点个数
+	 * @param num 时间戳数组
+	 * @param start 起始点
+	 * @return
+	 */
+	public static int judgeCutPoint(int[] low, int[][] edges, int n, int[] num, int start) {
 		for (int i = 1; i <= n; i++) { // 依次计算节点i的low[i]值
 			int parent = findParent(i, num, n);
 			// 排除掉父节点的情况下，使用dfs遍历，将遍历到的时间戳值用更小的替换大的时间戳值，不断更新low[i]的值
 			dfsExParent(low, i, parent, edges, num, parent);
-			if (low[i] >= num[parent]) {
+			if (i != start && low[i] >= num[parent]) { // 要注意排除起始点，否则程序在第一个点处就返回了，显然这是不对的
 				return i;
 			}
 		}
