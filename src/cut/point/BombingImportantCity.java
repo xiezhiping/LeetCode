@@ -1,7 +1,11 @@
 package cut.point;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
+
+import javax.swing.text.AsyncBoxView.ChildState;
 
 /**
  * "轰炸重要城市"问题：
@@ -43,9 +47,10 @@ public class BombingImportantCity {
 			v1 = sc.nextInt();
 			v2 = sc.nextInt();
 			edges[v1][v2] = 1; // 其他都为零表示两点之间不可达或者是自身
+			edges[v2][v1] = 1; // 无向图对称
 		}
 		// 求num数组（每个顶点对应的时间戳）
-		dfs(1, edges, num, n);
+		dfs(1, edges, num, n, low);
 		
 		// 得到割点
 		int cutPoint = judgeCutPoint(low, edges, n, num, 1);
@@ -64,7 +69,7 @@ public class BombingImportantCity {
 	 * @param num 时间戳矩阵
 	 * @param n 顶点个数
 	 */
-	public static void dfsExParent(int[] low, int child,int parent, int[][] edges, int[] num, int n) {
+	public static void dfsExParent(int[] low, int child,int parent, int[][] edges, int[] num, int n, int start) {
 		int[] book = new int[n + 1]; // 用于判断一个顶点是否已经被放到栈里面去过了，避免环引起的错误
 		Stack<Integer> search = new Stack<Integer>();
 		search.push(child);
@@ -77,9 +82,13 @@ public class BombingImportantCity {
 				low[child] = num[top];
 			}
 			for (int i = 1; i <=n; i++) {
-				if (i !=parent && num[top] < i && edges[top][i] == 1 && book[i] == 0) {
+				if (i !=parent && edges[top][i] == 1 && book[i] == 0) {
 					search.push(i);
 					book[i] = 1;
+				} else if (parent == start && i == start && edges[top][i] == 1 && book[i] == 0) {
+					search.push(i);
+					book[i] = 1;
+					break;
 				}
 			}
 		}
@@ -97,12 +106,59 @@ public class BombingImportantCity {
 		for (int i = 1; i <= n; i++) { // 依次计算节点i的low[i]值
 			int parent = findParent(i, num, n);
 			// 排除掉父节点的情况下，使用dfs遍历，将遍历到的时间戳值用更小的替换大的时间戳值，不断更新low[i]的值
-			dfsExParent(low, i, parent, edges, num, parent);
+			dfsExParent(low, i, parent, edges, num, n, start);
 			if (i != start && low[i] >= num[parent]) { // 要注意排除起始点，否则程序在第一个点处就返回了，显然这是不对的
-				return i;
+				// 还要判断是否是根节点
+				if (i != start) {
+					return parent;
+				} else {
+					// 判断根节点且至少有两个孩子，这两个孩子没有其他可达到的的其他路径的情况下才是割点
+					if (isRootCutPoint(edges, start, n)) {
+						return start;
+					}
+				}
 			}
 		}
 		return 0;
+	}
+	public static boolean isRootCutPoint(int[][] edges, int root, int n) {
+		boolean flag = false;
+		List<Integer> child = new ArrayList<>();
+		// 计算孩子数
+		for (int i = 1; i <= n; i++) {
+			if (edges[root][i] == 1) {
+				child.add(i);
+			}
+		}
+		int size = child.size();
+		for (int i = 0; i< size; i++) {
+			for (int j = i + 1; j < size; j ++) {
+				if (!isReachable(child.get(i), child.get(j), edges, n, root)) {
+					return true;
+				}
+			}
+		}
+		return flag;
+	}
+	public static boolean isReachable(int a, int b, int[][] edges, int n, int root) {
+		int[] book = new int[n + 1]; // 用于判断一个顶点是否已经被放到栈里面去过了，避免环引起的错误
+		Stack<Integer> search = new Stack<Integer>();
+		search.push(a);
+		book[a] = 1;
+		while (!search.isEmpty()) {
+			// 首先从栈顶去一个元素，并将这个顶点相连的顶点入栈
+			int top = search.pop();
+			if (top == b) {
+				return true;
+			}
+			for (int i = 1; i <=n; i++) {
+				if (i != root && edges[top][i] == 1 && book[i] == 0) {
+					search.push(i);
+					book[i] = 1;
+				}
+			}
+		}
+		return false;
 	}
 	/**
 	 * 根据时间戳数组找一个节点的父节点
@@ -131,7 +187,7 @@ public class BombingImportantCity {
 	 * @param num num数组
 	 * @param n 顶点个数
 	 */
-	public static void dfs(int start, int[][] edges, int[] num, int n) {
+	public static void dfs(int start, int[][] edges, int[] num, int n, int[] low) {
 		int[] book = new int[n + 1]; // 用于判断一个顶点是否已经被放到栈里面去过了，避免环引起的错误
 		int number = 1; // 被访问到的编号
 		Stack<Integer> search = new Stack<Integer>();
@@ -141,6 +197,7 @@ public class BombingImportantCity {
 			// 首先从栈顶去一个元素，并将这个顶点相连的顶点入栈
 			int top = search.pop();
 			num[top] = number; // 为num数组赋值
+			low[top] = number; // 最开始就是自己
 			number++;
 			for (int i = 1; i <=n; i++) {
 				if (edges[top][i] == 1 && book[i] == 0) {
