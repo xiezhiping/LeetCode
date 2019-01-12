@@ -82,13 +82,9 @@ public class BombingImportantCity {
 				low[child] = num[top];
 			}
 			for (int i = 1; i <=n; i++) {
-				if (i !=parent && edges[top][i] == 1 && book[i] == 0) {
+				if (i !=parent && edges[top][i] == 1 && book[i] == 0) { // 不经过父节点访问其他子节点不等同于不访问父节点！！！
 					search.push(i);
 					book[i] = 1;
-				} else if (parent == start && i == start && edges[top][i] == 1 && book[i] == 0) {
-					search.push(i);
-					book[i] = 1;
-					break;
 				}
 			}
 		}
@@ -107,9 +103,9 @@ public class BombingImportantCity {
 			int parent = findParent(i, num, n);
 			// 排除掉父节点的情况下，使用dfs遍历，将遍历到的时间戳值用更小的替换大的时间戳值，不断更新low[i]的值
 			dfsExParent(low, i, parent, edges, num, n, start);
-			if (i != start && low[i] >= num[parent]) { // 要注意排除起始点，否则程序在第一个点处就返回了，显然这是不对的
+			if (low[i] >= num[parent]) { // 要注意排除起始点，否则程序在第一个点处就返回了，显然这是不对的
 				// 还要判断是否是根节点
-				if (i != start) {
+				if (parent != start) {
 					return parent;
 				} else {
 					// 判断根节点且至少有两个孩子，这两个孩子没有其他可达到的的其他路径的情况下才是割点
