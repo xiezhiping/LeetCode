@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
-import javax.swing.text.AsyncBoxView.ChildState;
 
 /**
  * "轰炸重要城市"问题：
