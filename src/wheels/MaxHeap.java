@@ -81,8 +81,8 @@ public class MaxHeap {
 		while (parent >= 1 && flag) {
 			if (this.arr[parent] < this.arr[i]) {
 				swap(parent, i);
-				parent = parent >> 1;
 				siftup(parent);
+				parent = parent >> 1;
 			} else {
 				flag = false;
 			}
