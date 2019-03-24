@@ -15,7 +15,7 @@ import java.util.Random;
 
 
 public class FindMostPoem {
-	private static int wordNum = 1000000; // 一百万
+	private static int wordNum = 100000000; // 一亿之后就崩了，删掉.metadata/plugins/worbench
 	private static String[] words = { // 18个伪随机数种子
 			"abc","hjfds","gedi","uisds","abc","fhueds"
 			,"fduisds","ds","abc","ryeu","fjdfi","uire",
