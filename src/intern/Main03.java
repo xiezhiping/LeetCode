@@ -1,4 +1,4 @@
-package Intern;
+package intern;
 
 import java.util.Scanner;
 

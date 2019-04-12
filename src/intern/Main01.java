@@ -1,4 +1,4 @@
-package Intern;
+package intern;
 
 public class Main01 {
 
