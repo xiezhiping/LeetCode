@@ -20,41 +20,77 @@ public class MergeSort {
 		}
 	}
 	public static void mergeSort(int[] array, int start, int end) {
-		if (start < end) {
-			int mid = (start + end) / 2;
-			// 两路归并
-			mergeSort(array, start, mid);
-			mergeSort(array, mid + 1, end);
-			merge(array, start, mid, mid + 1, end);
-			// 这里还可以进行多路归并，只需将 mid = (start + end) / 4，然后分别计算每次merge的start1，end1等
-			
+		if (start >= end) {
+			return;
 		}
+		int mid = (start + end) / 2;
+		mergeSort(array, start, mid);
+		mergeSort(array, mid + 1, end);
+		merge(array, start, mid, mid+1, end);
 	}
-	public static void merge(int[] array, int start1, int end1, int start2, int end2) {
-		int vernier1, vernier2; // vernier1、vernier2分别为表1、表2的游标
-		{
-			vernier1 = start1;
-			vernier2 = start2;
-		}
-		int k = 0;
-		int[] temp = new int[end2 - start1 + 1]; // 建立一个临时长度为两个子列表长度之和的数组
-		while (vernier1 <= end1 && vernier2 <= end2) { // 通过循环，依次从两个子表中找出较小元素放入临时数组，并移动游标
-			if (array[vernier1] > array[vernier2]) {
-				temp[k++] = array[vernier2++];
+	public static void merge(int[] array, int s1, int e1, int s2, int e2) {
+		int flag1 = s1;
+		int flag2 = s2;
+		int len = e2-s1+1;
+		int[] temp = new int[len];
+		int i = 0; // 临时数组下标
+		while (flag1<=e1 && flag2<=e2) {
+			if (array[flag1] <= array[flag2]) {
+				temp[i] = array[flag1];
+				i++;
+				flag1++;
 			} else {
-				temp[k++] = array[vernier1++];
+				temp[i++] = array[flag2++];
 			}
 		}
-		// 将剩下的元素依次放入临时数组中（而且肯定是只剩下一方）
-		while (vernier1 <= end1) {
-			temp[k++] = array[vernier1++];
+		while (flag1 <= e1) {
+			temp[i++] = array[flag1++];
 		}
-		while (vernier2 <= end2) {
-			temp[k++] = array[vernier2++];
+		while (flag2 <= e2) {
+			temp[i++] = array[flag2++];
 		}
-		k = start1;
-		for (int el : temp) { // 将临时数组元素复制给原数组
-			array[k++] = el;
+		// 将排序后的复制给array
+		i = s1;
+		for(int el : temp) {
+			array[i++] = el;
 		}
 	}
+//	public static void mergeSort(int[] array, int start, int end) {
+//		if (start < end) {
+//			int mid = (start + end) / 2;
+//			// 两路归并
+//			mergeSort(array, start, mid);
+//			mergeSort(array, mid + 1, end);
+//			merge(array, start, mid, mid + 1, end);
+//			// 这里还可以进行多路归并，只需将 mid = (start + end) / 4，然后分别计算每次merge的start1，end1等
+//			
+//		}
+//	}
+//	public static void merge(int[] array, int start1, int end1, int start2, int end2) {
+//		int vernier1, vernier2; // vernier1、vernier2分别为表1、表2的游标
+//		{
+//			vernier1 = start1;
+//			vernier2 = start2;
+//		}
+//		int k = 0;
+//		int[] temp = new int[end2 - start1 + 1]; // 建立一个临时长度为两个子列表长度之和的数组
+//		while (vernier1 <= end1 && vernier2 <= end2) { // 通过循环，依次从两个子表中找出较小元素放入临时数组，并移动游标
+//			if (array[vernier1] > array[vernier2]) {
+//				temp[k++] = array[vernier2++];
+//			} else {
+//				temp[k++] = array[vernier1++];
+//			}
+//		}
+//		// 将剩下的元素依次放入临时数组中（而且肯定是只剩下一方）
+//		while (vernier1 <= end1) {
+//			temp[k++] = array[vernier1++];
+//		}
+//		while (vernier2 <= end2) {
+//			temp[k++] = array[vernier2++];
+//		}
+//		k = start1;
+//		for (int el : temp) { // 将临时数组元素复制给原数组
+//			array[k++] = el;
+//		}
+//	}
 }
